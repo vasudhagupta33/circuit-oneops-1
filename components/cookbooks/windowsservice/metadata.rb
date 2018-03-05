@@ -149,6 +149,7 @@ attribute 'username',
     :filter    => {'all' => {'visible' => 'user_account:eq:SpecificUser'}}
   }
 
+
 attribute 'password',
   :description => 'Password',
   :encrypted   => true,
@@ -158,6 +159,45 @@ attribute 'password',
     :order     => 3,
     :filter    => {'all' => {'visible' => 'user_account:eq:SpecificUser'}}
   }
+
+attribute 'failure',
+  :description => 'failure',
+  :data_type   => 'array',
+  :format      => {
+    :help      => 'Select action in case service fails',
+    :category  => '1.Recovery',
+    :order     => 1,
+  }
+
+ attribute 'reset_fail_counter',
+    :description => 'Reset Fail Counter After',
+    :default => "0",
+    :format      => {
+        :help      => 'Specify value in milliseconds after which fail counter is reset',
+        :category  => '1.Recovery',
+        :order     => 2
+    }
+
+
+  attribute 'restart_service_after',
+    :description => 'Restart Service After',
+    :default => "0",
+    :format      => {
+        :help      => 'Specify value in seconds after which service is restarted',
+        :category  => '1.Recovery',
+        :order     => 3,
+    }
+
+    attribute 'command',
+        :description => 'Run Command',
+        :default => "",
+        :format      => {
+            :help      => 'Specify Program to run in case service fails',
+            :category  => '1.Recovery',
+            :order     => 4,
+        }
+
+
 
 
 recipe 'start_service', 'Start windows service'
