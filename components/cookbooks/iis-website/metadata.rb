@@ -9,6 +9,7 @@ supports 'windows'
 depends 'iis'
 depends 'artifact'
 depends 'taskscheduler'
+depends 'walmart_cert_service'
 
 
 
@@ -119,26 +120,6 @@ attribute 'iis_iusrs_group_service_accounts',
     :order     => 7
   }
 
-attribute 'iisreset_before_deployment',
-  :description => 'IISReset before deploy',
-  :default     => 'false',
-  :format      => {
-    :help      => 'Specify whether to do IISReset before deploy',
-    :category  => '2.IIS Web site',
-    :form     => {'field' => 'checkbox'},
-    :order     => 8
-  }
-
-attribute 'iisreset_after_deployment',
-  :description => 'IISReset after deploy',
-  :default     => 'false',
-  :format      => {
-    :help      => 'Specify whether to do IISReset after deploy',
-    :category  => '2.IIS Web site',
-    :form     => {'field' => 'checkbox'},
-    :order     => 9
-  }
-
 attribute 'enabled',
   :description => 'Enable IIS Logging',
   :default     => 'true',
@@ -220,9 +201,7 @@ attribute 'runtime_version',
   :category  => '4.IIS Application Pool',
   :order     => 1,
   :form      => { 'field' => 'select',
-                  'options_for_select' => [['v2.0', 'v2.0'],
-                                           ['v4.0', 'v4.0'],
-                                           ['No Managed Code', 'NoManagedCode']]
+                  'options_for_select' => [['v2.0', 'v2.0'], ['v4.0', 'v4.0']]
                 }
 }
 
@@ -571,6 +550,116 @@ attribute 'logs_cleanup_up_time',
     :pattern   => '^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$',
     :order     => 2
   }
+
+  attribute 'enable_certificate',
+  :description => 'Enable Certificate',
+  :default     => 'false',
+  :format      => {
+    :help      => 'Specifies certificate for iis website',
+    :category  => '1.Certificate',
+    :form      => {'field' => 'checkbox'},
+    :order     => 1
+  }
+
+
+  attribute 'auto_provision',
+    :description => 'Auto Provision Certificate',
+    :default => 'false',
+    :format => {
+        :help => 'Auto provision the cert using Certificate Service',
+        :category => '1.Certificate',
+        :form => { 'field' => 'checkbox' },
+        :filter => {'all' => {'visible' => 'enable_certificate:eq:true'}},
+        :order => 2
+    }
+
+  attribute 'common_name',
+              :description => "Common Name",
+              :default => "",
+              :format => {
+                :filter => {'all' => {'visible' => 'auto_provision:eq:true && enable_certificate:eq:true'}},
+                :help => 'Enter the common name for the certificate to be provisioned',
+                :category => '1.Certificate',
+                :order => 3
+              }
+
+attribute 'passphrase',
+                :description => "Pass Phrase",
+                :encrypted => true,
+                :default => "",
+                :format => {
+                  :filter => {'all' => {'visible' => 'auto_provision:eq:true && enable_certificate:eq:true'}},
+                  :help => 'Enter the passphrase for the certificate key',
+                  :category => '1.Certificate',
+                  :order => 4,
+                }
+
+
+attribute 'ssl_data',
+                        :description => "Data",
+                        :data_type => "text",
+                        :default => "",
+                        :format => {
+                          :filter => {'all' => {'visible' => 'auto_provision:eq:false && enable_certificate:eq:true'}},
+                            :help => 'Enter the base-64 encoded form of the .pfx file.',
+                            :category => '1.Certificate',
+                            :order => 3
+                        }
+
+attribute 'ssl_password',
+                        :description => "Password",
+                        :encrypted => true,
+                        :default => "",
+                        :format => {
+                          :filter => {'all' => {'visible' => 'auto_provision:eq:false && enable_certificate:eq:true'}},
+                            :help => 'Enter password for a .pfx certificate.',
+                            :category => '1.Certificate',
+                            :order => 4
+                        }
+
+attribute 'domain',
+                          :description => "Domain Name",
+                          :default => "",
+                          :format => {
+                            :filter => {'all' => {'visible' => 'auto_provision:eq:true && enable_certificate:eq:true'}},
+                            :help => 'Required for internet facing cert. Optional field if requesting internal certificate',
+                            :category => '1.Certificate',
+                            :order => 5
+                          }
+
+attribute 'owner_email',
+                          :description => "Application Owner Email DL (Mandatory)",
+                          :default => "",
+                          :format => {
+                            :filter => {'all' => {'visible' => 'auto_provision:eq:true && enable_certificate:eq:true'}},
+                            :help => 'Email alias of the application team that owns this certificate',
+                            :category => '1.Certificate',
+                            :pattern => "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}",
+                            :order => 6
+                          }
+
+attribute 'san',
+                            :description => "Subject Alternative Name",
+                            :data_type => 'array',
+                            :default => "",
+                            :format => {
+                              :filter => {'all' => {'visible' => 'auto_provision:eq:true && enable_certificate:eq:true'}},
+                              :help => 'Enter the SANs (Subject Alternative Names) for the certificate to be provisioned',
+                              :category => '1.Certificate',
+                              :order => 7
+                            }
+
+attribute 'external',
+                            :description => "External (Internet Facing)",
+                            :format => {
+                              :filter => {'all' => {'visible' => 'auto_provision:eq:true && enable_certificate:eq:true'}},
+                              :category => '1.Certificate',
+                              :order => 8,
+                              :form => { 'field' => 'checkbox' },
+                              :help => 'Is Internet facing certificate'
+                            }
+
+
 
 recipe 'app_pool_recycle', 'Recycle application pool'
 recipe 'iis_reset', 'Restart IIS'

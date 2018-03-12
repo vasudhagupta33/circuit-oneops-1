@@ -23,6 +23,60 @@ end
 website_physical_path = physical_path
 heartbeat_path = "#{physical_path}/heartbeat.html"
 
+ssl_certificate_exists = false
+
+if site.enable_certificate == 'true'
+  ssl_certificate_exists = true
+
+  if site.auto_provision == 'true'
+    cloud_name = node[:workorder][:cloud][:ciName]
+    provider = ""
+
+    cert_service = node[:workorder][:services][:certificate]
+
+    Chef::Log.info "Certificate Service - #{cloud_name} and  #{cert_service}"
+
+    if !cert_service.nil? && !cert_service[cloud_name].nil?
+    	  provider = node[:workorder][:services][:certificate][cloud_name][:ciClassName].gsub("cloud.service.","").downcase.split(".").last
+    else
+            Chef::Log.error("Certificate cloud service not defined for this cloud")
+            exit 1
+    end
+
+    certificate = Hash.new
+    certificate["common_name"] = site.common_name
+    certificate["san"] = ""
+    certificate["external"] = "false"
+    certificate["domain"] = site.domain
+    certificate["owner_email"] = site.owner_email
+    certificate["passphrase"] = site.passphrase
+
+    node.set[:certificate] = certificate
+    include_recipe provider + "::add_certificate"
+
+    ssl_data = node[:pfx_cert]
+    ssl_password = site.passphrase
+
+  else
+    ssl_data = site.ssl_data
+    ssl_password = site.ssl_password
+
+  end
+
+    cert = OpenSSL::X509::Certificate.new(ssl_data)
+    thumbprint = OpenSSL::Digest::SHA1.new(cert.to_der).to_s
+
+    iis_certificate platform_name do
+      raw_data ssl_data
+      password ssl_password
+  end
+
+end
+
+
+
+=begin
+
 certs = node.workorder.payLoad.DependsOn.select { |d| d[:ciClassName] =~ /Certificate/ }
 ssl_certificate_exists = false
 thumbprint = ''
@@ -43,6 +97,8 @@ certs.each do |cert|
 
   end
 end
+
+=end
 
 %W( #{physical_path} #{sc_directory_path} #{dc_directory_path} #{log_directory_path}).each do | path |
   directory path do
