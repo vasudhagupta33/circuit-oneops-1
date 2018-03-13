@@ -72,6 +72,7 @@ resource "chocopackage",
   :design        => true,
   :requires      => {
     :constraint  => "0..1",
+    :services    => '*mirror',
     :help        => "Installs chocolatey package"
   },
   :attributes       => {
