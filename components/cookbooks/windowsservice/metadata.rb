@@ -149,6 +149,7 @@ attribute 'username',
     :filter    => {'all' => {'visible' => 'user_account:eq:SpecificUser'}}
   }
 
+
 attribute 'password',
   :description => 'Password',
   :encrypted   => true,
@@ -158,6 +159,89 @@ attribute 'password',
     :order     => 3,
     :filter    => {'all' => {'visible' => 'user_account:eq:SpecificUser'}}
   }
+
+attribute 'first_failure',
+  :description => 'First Failure',
+  :default => 'TakeNoAction',
+  :format      => {
+    :help      => 'Select first action in case service fails',
+    :category  => '4.Recovery',
+    :order     => 1,
+    :form      => { 'field' => 'select',
+                    'options_for_select' => [
+                      ['Restart The Service', 'RestartService'],
+                      ['Restart The Computer', 'RestartComputer'],
+                      ['Run a Command', 'RunCommand'],
+                      ['Take No Action', 'TakeNoAction']
+                    ]
+                  }
+  }
+
+attribute 'second_failure',
+    :description => 'Second Failure',
+    :default => 'TakeNoAction',
+    :format      => {
+      :help      => 'Select second action in case service fails',
+      :category  => '4.Recovery',
+      :order     => 2,
+      :form      => { 'field' => 'select',
+                      'options_for_select' => [
+                        ['Restart The Service', 'RestartService'],
+                        ['Restart The Computer', 'RestartComputer'],
+                        ['Run a Command', 'RunCommand'],
+                        ['Take No Action', 'TakeNoAction']
+                      ]
+                    }
+  }
+
+attribute 'subsequent_failure',
+    :description => 'Subsequent Failures',
+    :default => 'TakeNoAction',
+    :format      => {
+      :help      => 'Select third action in case service fails',
+      :category  => '4.Recovery',
+      :order     => 3,
+      :form      => { 'field' => 'select',
+                      'options_for_select' => [
+                        ['Restart The Service', 'RestartService'],
+                        ['Restart The Computer', 'RestartComputer'],
+                        ['Run a Command', 'RunCommand'],
+                        ['Take No Action', 'TakeNoAction']
+                      ]
+                    }
+    }
+
+ attribute 'reset_fail_counter',
+    :description => 'Reset Fail Counter After',
+    :default => "0",
+    :format      => {
+        :help      => 'Specify value in milliseconds after which fail counter is reset',
+        :category  => '4.Recovery',
+        :order     => 4
+    }
+
+
+  attribute 'restart_service_after',
+    :description => 'Restart Service After',
+    :default => "0",
+    :format      => {
+        :help      => 'Specify value in seconds after which service is restarted',
+        :category  => '4.Recovery',
+        :order     => 5,
+        :filter    => {'all' => {'visible' => 'first_failure:eq:RestartService || second_failure:eq:RestartService || subsequent_failure:eq:RestartService'}}
+    }
+
+    attribute 'command',
+        :description => 'Run Command',
+        :default => "",
+        :format      => {
+            :help      => 'Specify Program to run in case service fails',
+            :category  => '4.Recovery',
+            :order     => 6,
+            :filter    => {'all' => {'visible' => 'first_failure:eq:RunCommand || second_failure:eq:RunCommand || subsequent_failure:eq:RunCommand'}}
+        }
+
+
 
 
 recipe 'start_service', 'Start windows service'
