@@ -6,7 +6,11 @@ require 'json'
 #	action :create
 #end
 
-`mkdir -p /opt/oneops/keywhiz`
+if node['platform_family'] == 'windows'
+  `mkdir -p C:\\opt\\oneops\\keywhiz`
+else
+  `mkdir -p /opt/oneops/keywhiz`
+end
 
 include_recipe "keywhiz-client::set_attributes"
 
@@ -39,5 +43,5 @@ include_recipe provider + "::add_certificate"
 #generate group-id on kw server
 include_recipe "keywhiz-client::create_group"
 
-#generate keywhiz-sync config 
+#generate keywhiz-sync config
 include_recipe "keywhiz-client::create_sync"

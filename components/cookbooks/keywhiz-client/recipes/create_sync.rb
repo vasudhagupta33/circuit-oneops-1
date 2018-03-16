@@ -1,5 +1,12 @@
+
 require 'net/https'
 require 'json'
+
+if node['platform_family'] == 'windows'
+  include_recipe "keywhiz-client::import_certificate"
+  return
+end
+
 
 directory '/opt/oneops/keywhiz/keysync/CA' do
   action :create
@@ -147,4 +154,3 @@ ruby_block 'check_process' do
   end
   action :run
 end
-

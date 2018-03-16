@@ -6,6 +6,7 @@ grouping 'default',
   :packages => [ 'base', 'mgmt.catalog', 'catalog', 'mgmt.manifest', 'manifest', 'bom', 'mgmt.cloud.service', 'cloud.service' ],
   :namespace => true
 
+
 attribute 'host',
   :description => "Keywhiz service host",
   :required => "required",
@@ -35,22 +36,40 @@ attribute 'client_cert',
     :help => 'Combined client cert (in pem format including key, cert and ca cert) provided by keywhiz server for mutual TLS auth.'
   }
 
+  attribute 'sync_cert_params',
+    :description => "Keywhiz cert attributes",
+    :data_type => "hash",
+    :format => {
+      :data_type => "hash",
+      :category => '1.Global',
+      :order => 4,
+      :help => 'Attributes required for configuring keysync-cert'
+    }
+
 attribute 'keysync_download_url',
   :description => "Keysync download url",
   :required => "required",
   :format => {
-    :category => '1.Global',
-    :order => 4,
+    :category => '2.Linux',
+    :order => 1,
     :help => 'Download url to the keysync binary tar.gz file'
   }
 
-attribute 'sync_cert_params',
-  :description => "Keywhiz cert attributes",
-  :data_type => 'hash',
-  :format => {
-    :category => '1.Global',
-    :data_type => 'hash',
-    :order => 5,
-    :help => 'Attributes required for configuring keysync-cert'
-  }
+  attribute 'keywhiz_chocopackage_source_url',
+    :description => "Keywhiz choco Package Source Url",
+    :required => "required",
+    :format => {
+      :category => '3.Windows',
+      :order => 1,
+      :help => 'chocolatey package source uri'
+    }
 
+  attribute 'keywhiz_chocopackage_details',
+    :description => "Keywhiz Choco Package Details",
+    :data_type => "hash",
+    :format => {
+      :data_type => "hash",
+      :category => '3.Windows',
+      :order => 2,
+      :help => 'Keywhiz Windows Service Choco Package Name and Version'
+    }

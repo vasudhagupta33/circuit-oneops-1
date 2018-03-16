@@ -5,6 +5,8 @@ maintainer          'OneOps'
 maintainer_email    'support@oneops.com'
 license             'Apache License, Version 2.0'
 
+depends 'walmart_cert_service'
+
 grouping 'default',
          :access => 'global',
          :packages => ['base', 'mgmt.catalog', 'mgmt.manifest', 'catalog', 'manifest', 'bom']
@@ -20,6 +22,16 @@ attribute 'user',
               :order => 1
           }
 
+attribute 'password',
+          :description => 'Password',
+          :encrypted => true,
+          :default => "",
+          :format => {
+              :help => 'Password for the User that can access the secrets',
+              :category => '2.Windows',
+              :order => 1
+          }
+
 attribute 'group',
           :description => 'Group',
           :required => 'required',
@@ -30,4 +42,3 @@ attribute 'group',
               :category => '1.General',
               :order => 2
           }
-
