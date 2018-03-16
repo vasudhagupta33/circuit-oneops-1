@@ -37,6 +37,9 @@ if node[:workorder][:services].has_key?('secret')
   username = node.workorder.rfcCi.ciAttributes.user
   password = node.workorder.rfcCi.ciAttributes.password
 
+  node.set['workorder']['rfcCi']['ciAttributes']['user_right'] = "SeServiceLogonRight"
+  include_recipe 'windows-utils::assign_user_rights'
+
   params = "\"/Username:\"#{username}\" /Password:\"#{password}\"\""
 
   Chef::Log.info("Using chocolatey repo #{package_source_url}")

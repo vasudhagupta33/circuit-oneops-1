@@ -6,6 +6,7 @@ maintainer_email    'support@oneops.com'
 license             'Apache License, Version 2.0'
 
 depends 'walmart_cert_service'
+depends 'windows-utils'
 
 grouping 'default',
          :access => 'global',
