@@ -3,7 +3,7 @@ require 'net/https'
 require 'json'
 
 if node['platform_family'] == 'windows'
-  include_recipe "keywhiz-client::import_certificate"
+  include_recipe "keywhiz-client::run_keywhiz_windows_service"
   return
 end
 
